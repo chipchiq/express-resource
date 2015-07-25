@@ -22,14 +22,13 @@ var express = require('express')
  */
 
 var orderedActions = [
-   'index'    //  GET   /
-  , 'new'     //  GET   /new
-  , 'create'  //  POST  /
-  , 'show'    //  GET   /:id
-  , 'edit'    //  GET   /edit/:id
-  , 'update'  //  PUT   /:id
-  , 'patch'   //  PATCH /:id
-  , 'destroy' //  DEL   /:id
+   'index'    //  GET  /
+  , 'new'     //  GET  /new
+  , 'create'  //  POST /
+  , 'show'    //  GET  /:id
+  , 'edit'    //  GET  /edit/:id
+  , 'update'  //  PUT  /:id
+  , 'destroy' //  DEL  /:id
 ];
 
 /**
@@ -194,9 +193,9 @@ Resource.prototype.add = function(resource){
       route = routes[key];
       delete routes[key];
       if (method == 'del') method = 'delete';
-      app.routes[method].forEach(function(route, i){
-        if (route.path == key) {
-          app.routes[method].splice(i, 1);
+      app._router.stack.forEach(function(stack, i){        
+        if (stack.route && stack.route.path == key) {
+          app._router.stack.splice(i, 1);
         }
       })
       resource.map(route.method, route.orig, route.fn);
@@ -233,9 +232,6 @@ Resource.prototype.mapDefaultAction = function(key, fn){
       break;
     case 'update':
       this.put(fn);
-      break;
-    case 'patch':
-      this.patch(fn);
       break;
     case 'destroy':
       this.del(fn);
